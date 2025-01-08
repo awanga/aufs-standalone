@@ -212,7 +212,7 @@ index 6bb553ed5c55..44a7823a0de3 100644
 @@ -1873,7 +1873,7 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
  	return addr;
  
- unmap_and_free_vma:
+ unmap_and_free_file_vma:
 -	fput(vma->vm_file);
 +	vma_fput(vma);
  	vma->vm_file = NULL;
