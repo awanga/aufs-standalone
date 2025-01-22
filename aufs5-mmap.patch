@@ -182,9 +182,9 @@ diff --git a/mm/mmap.c b/mm/mmap.c
 index 6bb553ed5c55..44a7823a0de3 100644
 --- a/mm/mmap.c
 +++ b/mm/mmap.c
-@@ -183,7 +183,7 @@ static struct vm_area_struct *remove_vma(struct vm_area_struct *vma)
- 	if (vma->vm_ops && vma->vm_ops->close)
- 		vma->vm_ops->close(vma);
+@@ -182,7 +182,7 @@
+ 	might_sleep();
+ 	vma_close(vma);
  	if (vma->vm_file)
 -		fput(vma->vm_file);
 +		vma_fput(vma);
@@ -218,7 +218,7 @@ index 6bb553ed5c55..44a7823a0de3 100644
  	vma->vm_file = NULL;
  
  	/* Undo any partial mapping done by a device driver. */
-@@ -2723,7 +2723,7 @@ int __split_vma(struct mm_struct *mm, struct vm_area_struct *vma,
+@@ -2735,7 +2735,7 @@
  		goto out_free_mpol;
  
  	if (new->vm_file)
@@ -227,9 +227,9 @@ index 6bb553ed5c55..44a7823a0de3 100644
  
  	if (new->vm_ops && new->vm_ops->open)
  		new->vm_ops->open(new);
-@@ -2742,7 +2742,7 @@ int __split_vma(struct mm_struct *mm, struct vm_area_struct *vma,
- 	if (new->vm_ops && new->vm_ops->close)
- 		new->vm_ops->close(new);
+@@ -2753,7 +2753,7 @@
+ 	/* Clean everything up if vma_adjust failed. */
+ 	vma_close(new);
  	if (new->vm_file)
 -		fput(new->vm_file);
 +		vma_fput(new);
@@ -281,7 +281,7 @@ index 6bb553ed5c55..44a7823a0de3 100644
  out:
  	mmap_write_unlock(mm);
  	if (populate)
-@@ -3277,7 +3304,7 @@ struct vm_area_struct *copy_vma(struct vm_area_struct **vmap,
+@@ -3318,7 +3345,7 @@
  		if (anon_vma_clone(new_vma, vma))
  			goto out_free_mempol;
  		if (new_vma->vm_file)
@@ -303,15 +303,16 @@ index 02d2427b8f9e..a7419302ab4e 100644
  
  		/* IO memory and memory shared directly out of the pagecache
  		 * from ramfs/tmpfs mustn't be released here */
-@@ -655,7 +655,7 @@ static void delete_vma(struct mm_struct *mm, struct vm_area_struct *vma)
- 	if (vma->vm_ops && vma->vm_ops->close)
- 		vma->vm_ops->close(vma);
+@@ -654,7 +654,7 @@
+ {
+ 	vma_close(vma);
  	if (vma->vm_file)
 -		fput(vma->vm_file);
 +		vma_fput(vma);
  	put_nommu_region(vma->vm_region);
  	vm_area_free(vma);
  }
+
 @@ -1175,7 +1175,7 @@ unsigned long do_mmap(struct file *file,
  					goto error_just_free;
  				}

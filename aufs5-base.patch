@@ -25,35 +25,6 @@ index c8103e57a70b..e1b9eaca78fd 100644
  AUXILIARY DISPLAY DRIVERS
  M:	Miguel Ojeda <ojeda@kernel.org>
  S:	Maintained
-diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-index 8cba10aafadb..7a9e40b97831 100644
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -799,6 +799,24 @@ static int loop_change_fd(struct loop_device *lo, struct block_device *bdev,
- 	return error;
- }
- 
-+/*
-+ * for AUFS
-+ * no get/put for file.
-+ */
-+struct file *loop_backing_file(struct super_block *sb)
-+{
-+	struct file *ret;
-+	struct loop_device *l;
-+
-+	ret = NULL;
-+	if (MAJOR(sb->s_dev) == LOOP_MAJOR) {
-+		l = sb->s_bdev->bd_disk->private_data;
-+		ret = l->lo_backing_file;
-+	}
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(loop_backing_file);
-+
- /* loop sysfs attributes */
- 
- static ssize_t loop_attr_show(struct device *dev, char *page,
 diff --git a/fs/dcache.c b/fs/dcache.c
 index cf871a81f4fd..bc5095b734f5 100644
 --- a/fs/dcache.c
