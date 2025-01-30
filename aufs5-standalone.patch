@@ -37,14 +37,14 @@ diff --git a/fs/fcntl.c b/fs/fcntl.c
 index 02382fa9bd34..3418c60b9014 100644
 --- a/fs/fcntl.c
 +++ b/fs/fcntl.c
-@@ -86,6 +86,7 @@ int setfl(int fd, struct file *filp, unsigned long arg)
+@@ -84,6 +86,7 @@
   out:
  	return error;
  }
 +EXPORT_SYMBOL_GPL(setfl);
  
- static void f_modown(struct file *filp, struct pid *pid, enum pid_type type,
-                      int force)
+ void __f_setown(struct file *filp, struct pid *pid, enum pid_type type,
+ 		int force)
 diff --git a/fs/file_table.c b/fs/file_table.c
 index e8c9016703ad..5e7a880830fb 100644
 --- a/fs/file_table.c
